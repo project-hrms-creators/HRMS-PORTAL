@@ -1,815 +1,200 @@
-### HRMS-PORTAL
---------------
-# GitHub Collaboration Guide
----
 
-# 1. Prerequisites
+# HRMS Portal
 
-Install:
-
-* Git
-* GitHub Account
-* GitHub Desktop (Optional)
-* VS Code (Recommended)
-
-Verify Git installation:
-
-```bash
-git --version
-```
-
-Configure Git:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
-```
-
-Check configuration:
-
-```bash
-git config --list
-```
+> Enterprise-grade, mobile-first Human Resource Management System built with **React Native (Expo)** and **FastAPI**, designed with scalability, maintainability, and cloud-agnostic deployment in mind.
 
 ---
 
-# 2. Repository Setup
+## Overview
 
-One team member creates the repository.
+HRMS Portal streamlines core HR operations for organizations through a modern mobile application. The project follows a modular architecture, offline-first principles, and clean engineering practices to support long-term growth from MVP to enterprise scale.
 
-Example:
+## Core Features
+
+- Secure Authentication (JWT + Refresh Tokens)
+- Employee Management
+- Attendance Tracking
+- Leave Management
+- Role-Based Access Control (RBAC)
+- User Profiles
+- Offline Synchronization
+- Audit Logging
+- Multi-Tenant Architecture
+- Cloud-Agnostic Deployment
+
+---
+
+## Tech Stack
+
+### Mobile
+
+- React Native (Expo Development Build)
+- JavaScript
+- React Navigation
+- Zustand
+- TanStack Query
+- React Hook Form
+- Zod
+- NativeWind
+- MMKV
+- Axios
+
+### Backend
+
+- FastAPI
+- Python
+- SQLAlchemy 2
+- Alembic
+- PostgreSQL
+- Pydantic v2
+- JWT
+- bcrypt
+
+---
+
+## Project Structure
 
 ```text
-project-name/
-```
-
-Repository structure:
-
-```text
-project-name/
-│
-├── .github/
-│   └── workflows/
-│       ├── backend-ci.yml
-│       ├── mobile-ci.yml
-│       ├── tests.yml
-│       ├── security.yml
-│       └── deploy.yml
-│
-├── docs/
-│   ├── architecture/
-│   ├── api/
-│   ├── database/
-│   ├── deployment/
-│   ├── ui-ux/
-│   ├── coding-guidelines.md
-│   ├── contributing.md
-│   └── changelog.md
-│
+hrms-portal/
 ├── mobile/
-│   ├── android/
-│   ├── ios/
-│   ├── assets/
-│   │
-│   ├── src/
-│   │
-│   │   ├── app/
-│   │   │
-│   │   ├── navigation/
-│   │   │
-│   │   ├── shared/
-│   │   │   ├── components/
-│   │   │   ├── hooks/
-│   │   │   ├── services/
-│   │   │   ├── api/
-│   │   │   ├── theme/
-│   │   │   ├── constants/
-│   │   │   ├── utils/
-│   │   │   ├── validation/
-│   │   │   ├── storage/
-│   │   │   └── types/
-│   │   │
-│   │   ├── features/
-│   │   │
-│   │   │   ├── authentication/
-│   │   │   │   ├── components/
-│   │   │   │   ├── screens/
-│   │   │   │   ├── hooks/
-│   │   │   │   ├── api/
-│   │   │   │   ├── store/
-│   │   │   │   ├── types/
-│   │   │   │   └── validation/
-│   │   │   │
-│   │   │   ├── profile/
-│   │   │   ├── dashboard/
-│   │   │   ├── notifications/
-│   │   │   ├── chat/
-│   │   │   ├── analytics/
-│   │   │   └── settings/
-│   │   │
-│   │   └── App.tsx
-│   │
-│   ├── tests/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── .env.example
-│   └── README.md
-│
 ├── backend/
-│   │
-│   ├── app/
-│   │
-│   │   ├── core/
-│   │   │   ├── config.py
-│   │   │   ├── database.py
-│   │   │   ├── security.py
-│   │   │   ├── logging.py
-│   │   │   ├── cache.py
-│   │   │   └── settings.py
-│   │   │
-│   │   ├── common/
-│   │   │   ├── middleware/
-│   │   │   ├── exceptions/
-│   │   │   ├── responses/
-│   │   │   ├── validators/
-│   │   │   ├── permissions/
-│   │   │   ├── pagination/
-│   │   │   ├── dependencies/
-│   │   │   └── utils/
-│   │   │
-│   │   ├── modules/
-│   │   │
-│   │   │   ├── auth/
-│   │   │   │   ├── routes.py
-│   │   │   │   ├── controller.py
-│   │   │   │   ├── service.py
-│   │   │   │   ├── repository.py
-│   │   │   │   ├── model.py
-│   │   │   │   ├── schema.py
-│   │   │   │   ├── dependencies.py
-│   │   │   │   ├── constants.py
-│   │   │   │   └── tests/
-│   │   │   │
-│   │   │   ├── users/
-│   │   │   │   ├── routes.py
-│   │   │   │   ├── controller.py
-│   │   │   │   ├── service.py
-│   │   │   │   ├── repository.py
-│   │   │   │   ├── model.py
-│   │   │   │   ├── schema.py
-│   │   │   │   └── tests/
-│   │   │   │
-│   │   │   ├── dashboard/
-│   │   │   ├── notifications/
-│   │   │   ├── chat/
-│   │   │   ├── analytics/
-│   │   │   ├── uploads/
-│   │   │   ├── reports/
-│   │   │   └── settings/
-│   │   │
-│   │   ├── websocket/
-│   │   │
-│   │   ├── background/
-│   │   │   ├── celery.py
-│   │   │   ├── scheduler.py
-│   │   │   └── tasks/
-│   │   │
-│   │   └── main.py
-│   │
-│   ├── alembic/
-│   │
-│   ├── tests/
-│   │   ├── unit/
-│   │   ├── integration/
-│   │   ├── api/
-│   │   └── performance/
-│   │
-│   ├── scripts/
-│   │
-│   ├── pyproject.toml
-│   ├── uv.lock
-│   ├── Dockerfile
-│   ├── .python-version
-│   ├── .env.example
-│   ├── README.md
-│   └── alembic.ini
-│
 ├── database/
-│   ├── erd/
-│   ├── schema/
-│   ├── migrations/
-│   ├── seed/
-│   ├── backups/
-│   └── performance/
-│
 ├── infrastructure/
-│   ├── docker/
-│   ├── nginx/
-│   ├── monitoring/
-│   ├── production/
-│   └── terraform/
-│
-├── scripts/
-│   ├── setup.sh
-│   ├── dev.sh
-│   ├── lint.sh
-│   ├── format.sh
-│   ├── migrate.sh
-│   ├── seed.sh
-│   ├── backup.sh
-│   ├── test.sh
-│   └── deploy.sh
-│
-├── .editorconfig
-├── .gitignore
-├── .dockerignore
-├── .env.example
-├── docker-compose.yml
-├── Makefile
-├── README.md
-├── LICENSE
-└── CHANGELOG.md
-```
-
-Add collaborators:
-
-GitHub Repository → Settings → Collaborators → Add teammate.
-
----
-
-# 3. Branching Strategy
-
-Never work directly on `main`.
-
-Example:
-
-```text
-main
-│
-├── siddharth-feature
-│
-└── sinchana-feature
-```
-
-Each developer works on their own branch.
-
----
-
-# 4. Cloning the Repository
-
-```bash
-git clone https://github.com/username/repository.git
-
-cd repository
-```
-
-Check branches:
-
-```bash
-git branch -a
+├── docs/
+└── scripts/
 ```
 
 ---
 
-# 5. Creating Your Branch
+## Documentation
 
-Developer 1:
+| Document | Purpose |
+|----------|---------|
+| PRD.md | Product requirements |
+| Architecture.md | System architecture |
+| Schema.md | Database design |
+| TRD.md | Technical requirements |
+| Flow.md | User & System flows |
+| Design.md | Design system |
+| Plan.md | Engineering execution plan |
+| GitWorkflow.md | Git collaboration guide |
+
+---
+
+## Architecture Principles
+
+- Modular Monolith
+- Microservice Ready
+- API First
+- Offline First
+- Security by Default
+- Multi-Tenant
+- Scalable
+- Clean Architecture
+
+---
+
+## Development Workflow
+
+1. Clone the repository.
+2. Create a feature branch.
+3. Implement the feature.
+4. Write or update tests.
+5. Open a Pull Request.
+6. Complete code review.
+7. Merge after CI passes.
+
+Refer to **GitWorkflow.md** for detailed collaboration rules.
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+- Git
+- Node.js (LTS)
+- Expo CLI
+- Python 3.13+
+- uv
+- PostgreSQL
+- Docker (recommended)
+
+### Clone
 
 ```bash
-git checkout -b siddharth-feature
+git clone <repository-url>
+cd hrms-portal
 ```
 
-Developer 2:
+### Mobile
 
 ```bash
-git checkout -b sinchana-feature
+cd mobile
+npm install
+npx expo start
 ```
 
-Push the branch:
+### Backend
 
 ```bash
-git push -u origin siddharth-feature
+cd backend
+uv sync
+uv run alembic upgrade head
+uv run uvicorn app.main:app --reload
 ```
 
 ---
 
-# 6. Making Changes
+## Quality Standards
 
-After editing files:
-
-Check status:
-
-```bash
-git status
-```
-
-View changes:
-
-```bash
-git diff
-```
+- Feature-based architecture
+- Conventional Commits
+- Pull Request reviews
+- Automated testing
+- Documentation-first development
+- Secure coding practices
 
 ---
 
-# 7. Staging Files
+## Roadmap
 
-Stage specific files:
+### MVP
 
-```bash
-git add filename
-```
+- Authentication
+- Employee Management
+- Attendance
+- Leave
+- Dashboard
+- Profile
 
-Stage everything:
+### Future
 
-```bash
-git add .
-```
-
----
-
-# 8. Commiting Changes
-
-Good commit messages:
-
-```bash
-git commit -m "Add login functionality"
-```
-
-```bash
-git commit -m "Fix navbar responsiveness"
-```
-
-```bash
-git commit -m "Update dashboard UI"
-```
-
-Avoid:
-
-```bash
-git commit -m "changes"
-```
-
-```bash
-git commit -m "update"
-```
+- Payroll
+- Notifications
+- Reports
+- Analytics
+- AI Insights
+- Enterprise Integrations
 
 ---
 
-# 9. Pushing Changes
+## Contributing
 
-```bash
-git push origin siddharth-feature
-```
-
----
-
-# 10. Creating a Pull Request
-
-1. Open GitHub.
-2. Go to the repository.
-3. Click "Compare & Pull Request."
-4. Add:
-
-   * Title
-   * Description
-   * Screenshots (if needed)
-5. Request review.
-
-Example:
-
-```text
-Title:
-Add user authentication module
-
-Description:
-- Added login page
-- Added JWT authentication
-- Updated API routes
-```
+1. Read `GitWorkflow.md`.
+2. Follow coding standards.
+3. Keep pull requests focused.
+4. Update documentation when required.
+5. Ensure tests pass before requesting review.
 
 ---
 
-# 11. Code Review Process
+## License
 
-Reviewer checks:
-
-* Code quality
-* Naming conventions
-* Bugs
-* Performance
-* Documentation
-
-Options:
-
-* Approve
-* Request Changes
-* Comment
+This repository is intended for internal development. Add an appropriate open-source or proprietary license before public release.
 
 ---
 
-# 12. Merging Pull Requests
+## Acknowledgements
 
-After approval:
-
-```text
-Merge Pull Request
-```
-
-Delete branch if work is complete.
-
----
-
-# 13. Pull Latest Main Branch Changes
-
-Before starting work every day:
-
-```bash
-git checkout main
-
-git pull origin main
-```
-
-Switch back:
-
-```bash
-git checkout siddharth-feature
-```
-
-Merge main into your branch:
-
-```bash
-git merge main
-```
-
-Push updates:
-
-```bash
-git push origin siddharth-feature
-```
-
----
-
-# 14. Alternative: Rebase Method
-
-```bash
-git checkout main
-
-git pull origin main
-
-git checkout siddharth-feature
-
-git rebase main
-```
-
-Push:
-
-```bash
-git push --force-with-lease
-```
-
----
-
-# 15. Fetch Latest Changes
-
-```bash
-git fetch origin
-```
-
-View remote branches:
-
-```bash
-git branch -r
-```
-
----
-
-# 16. Resolving Merge Conflicts
-
-Conflict example:
-
-```text
-<<<<<<< HEAD
-New code
-=======
-Old code
->>>>>>> main
-```
-
-Edit manually:
-
-```text
-Final code
-```
-
-Then:
-
-```bash
-git add .
-
-git commit
-```
-
-Push:
-
-```bash
-git push
-```
-
----
-
-# 17. Daily Workflow
-
-### Step 1
-
-```bash
-git checkout main
-git pull origin main
-```
-
-### Step 2
-
-```bash
-git checkout your-branch
-git merge main
-```
-
-### Step 3
-
-Write code.
-
-### Step 4
-
-```bash
-git add .
-git commit -m "Meaningful message"
-git push
-```
-
-### Step 5
-
-Create Pull Request.
-
----
-
-# 18. Branch Naming Convention
-
-Feature:
-
-```text
-feature/login
-feature/dashboard
-```
-
-Bug fix:
-
-```text
-bugfix/navbar
-```
-
-Documentation:
-
-```text
-docs/readme
-```
-
-Testing:
-
-```text
-test/api
-```
-
----
-
-# 19. Commit Message Convention
-
-Feature:
-
-```text
-feat: add login system
-```
-
-Fix:
-
-```text
-fix: resolve navbar issue
-```
-
-Documentation:
-
-```text
-docs: update README
-```
-
-Refactor:
-
-```text
-refactor: optimize API code
-```
-
-Style:
-
-```text
-style: improve button design
-```
-
----
-
-# 20. Important Commands
-
-Check status:
-
-```bash
-git status
-```
-
-View branches:
-
-```bash
-git branch
-```
-
-Switch branch:
-
-```bash
-git checkout branch-name
-```
-
-Create branch:
-
-```bash
-git checkout -b branch-name
-```
-
-Delete local branch:
-
-```bash
-git branch -d branch-name
-```
-
-Delete remote branch:
-
-```bash
-git push origin --delete branch-name
-```
-
-View commit history:
-
-```bash
-git log
-```
-
-View compact history:
-
-```bash
-git log --oneline
-```
-
-Undo last commit:
-
-```bash
-git reset --soft HEAD~1
-```
-
-Discard changes:
-
-```bash
-git restore filename
-```
-
----
-
-# 21. Pull Before Push Rule
-
-Always do:
-
-```bash
-git checkout main
-
-git pull origin main
-
-git checkout your-branch
-
-git merge main
-```
-
-before:
-
-```bash
-git push
-```
-
-This prevents conflicts later.
-
----
-
-# 22. Files That Should Not Be Pushed
-
-Add to `.gitignore`:
-
-```text
-node_modules/
-.env
-.env.local
-dist/
-build/
-__pycache__/
-*.log
-.vscode/
-```
-
----
-
-# 23. Pull Request Checklist
-
-Before creating a PR:
-
-* Code runs successfully.
-* No unnecessary files.
-* No merge conflicts.
-* Latest main branch merged.
-* Proper commit messages.
-* Documentation updated.
-* Tests passed.
-
----
-
-# 24. Team Rules
-
-1. Never push directly to main.
-2. Create a separate branch.
-3. Pull latest main before working.
-4. Make small commits.
-5. Write meaningful commit messages.
-6. Review pull requests.
-7. Resolve conflicts immediately.
-8. Keep branches updated.
-9. Delete merged branches.
-10. Communicate major changes.
-
----
-
-# Complete Workflow Example
-
-Developer 1:
-
-```bash
-git checkout main
-git pull origin main
-
-git checkout -b feature-login
-
-# Write code
-
-git add .
-git commit -m "Add login page"
-
-git push origin feature-login
-```
-
-Create Pull Request.
-
-Developer 2:
-
-```bash
-git checkout main
-git pull origin main
-
-git checkout -b feature-dashboard
-
-# Write code
-
-git add .
-git commit -m "Add dashboard"
-
-git push origin feature-dashboard
-```
-
-After one PR merges:
-
-```bash
-git checkout main
-git pull origin main
-
-git checkout feature-dashboard
-
-git merge main
-
-git push
-```
-
-Continue development.
-
----
-
-# Final Golden Rules
-
-* Pull frequently.
-* Commit frequently.
-* Push regularly.
-* Review carefully.
-* Never force push to main.
-* Keep PRs small.
-* Communicate with teammates.
-* Resolve conflicts early.
-
-Following these practices ensures smooth collaboration and prevents code loss, conflicts, and deployment issues.
+This project follows documentation-driven development. Engineering decisions are captured in the accompanying documentation suite to ensure consistency, traceability, and maintainability throughout the software lifecycle.
