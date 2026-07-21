@@ -1,4 +1,4 @@
-import { storage } from '../mmkv';
+import { storage } from './mmkv';
 
 const KEYS = {
   ACCESS_TOKEN: 'auth.accessToken',
