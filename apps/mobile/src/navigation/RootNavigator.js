@@ -16,6 +16,15 @@ import AccountInfoScreen from '@/modules/profile/screens/AccountInfoScreen';
 import ChangePasswordScreen from '@/modules/profile/screens/ChangePasswordScreen';
 import NotificationsScreen from '@/modules/notifications/screens/NotificationsScreen';
 import NotificationDetailsScreen from '@/modules/notifications/screens/NotificationDetailsScreen';
+import SettingsHomeScreen from '@/modules/settings/screens/SettingsHomeScreen';
+import AccountSettingsScreen from '@/modules/settings/screens/AccountSettingsScreen';
+import SecuritySettingsScreen from '@/modules/settings/screens/SecuritySettingsScreen';
+import NotificationPreferencesScreen from '@/modules/settings/screens/NotificationPreferencesScreen';
+import PrivacySettingsScreen from '@/modules/settings/screens/PrivacySettingsScreen';
+import PreferencesScreen from '@/modules/settings/screens/PreferencesScreen';
+import HelpAndSupportScreen from '@/modules/settings/screens/HelpAndSupportScreen';
+import AboutApplicationScreen from '@/modules/settings/screens/AboutApplicationScreen';
+import LogoutConfirmationScreen from '@/modules/settings/screens/LogoutConfirmationScreen';
 import { useAuthStore } from '@/modules/auth/store/authStore';
 import { sessionManager } from '@/modules/auth/services/sessionManager';
 
@@ -62,6 +71,15 @@ export default function RootNavigator() {
           <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="NotificationDetails" component={NotificationDetailsScreen} />
+          <Stack.Screen name="Settings" component={SettingsHomeScreen} />
+          <Stack.Screen name="AccountSettings" component={AccountSettingsScreen} />
+          <Stack.Screen name="SecuritySettings" component={SecuritySettingsScreen} />
+          <Stack.Screen name="NotificationPreferences" component={NotificationPreferencesScreen} />
+          <Stack.Screen name="PrivacySettings" component={PrivacySettingsScreen} />
+          <Stack.Screen name="Preferences" component={PreferencesScreen} />
+          <Stack.Screen name="HelpAndSupport" component={HelpAndSupportScreen} />
+          <Stack.Screen name="AboutApplication" component={AboutApplicationScreen} />
+          <Stack.Screen name="LogoutConfirmation" component={LogoutConfirmationScreen} />
         </>
       )}
     </Stack.Navigator>
