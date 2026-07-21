@@ -5,7 +5,10 @@ import Login from '@/modules/auth/Login';
 import DashboardScreen from '@/modules/dashboard/screens/DashboardScreen';
 import AttendanceScreen from '@/modules/attendance/screens/AttendanceScreen';
 import AttendanceHistoryScreen from '@/modules/attendance/screens/AttendanceHistoryScreen';
-import Leave from '@/modules/leave/Leave';
+import LeaveScreen from '@/modules/leave/screens/LeaveScreen';
+import ApplyLeaveScreen from '@/modules/leave/screens/ApplyLeaveScreen';
+import LeaveHistoryScreen from '@/modules/leave/screens/LeaveHistoryScreen';
+import LeaveDetailsScreen from '@/modules/leave/screens/LeaveDetailsScreen';
 import Profile from '@/modules/profile/Profile';
 import Notifications from '@/modules/notifications/Notifications';
 import { useAuthStore } from '@/modules/auth/store/authStore';
@@ -43,7 +46,10 @@ export default function RootNavigator() {
           <Stack.Screen name="Dashboard" component={DashboardScreen} />
           <Stack.Screen name="Attendance" component={AttendanceScreen} />
           <Stack.Screen name="AttendanceHistory" component={AttendanceHistoryScreen} />
-          <Stack.Screen name="Leave" component={Leave} />
+          <Stack.Screen name="Leave" component={LeaveScreen} />
+          <Stack.Screen name="ApplyLeave" component={ApplyLeaveScreen} />
+          <Stack.Screen name="LeaveHistory" component={LeaveHistoryScreen} />
+          <Stack.Screen name="LeaveDetails" component={LeaveDetailsScreen} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Notifications" component={Notifications} />
         </>
