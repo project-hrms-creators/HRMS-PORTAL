@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../hooks/useSettings';
 import { SettingsSection } from '../components/SettingsSection';
-import { SettingsItem } from '../components/SettingsItem';
+import { ListItem } from '@/components/ListItem';
 
 export default function AccountSettingsScreen() {
   const navigation = useNavigation();
@@ -17,13 +17,13 @@ export default function AccountSettingsScreen() {
         <Text className="mb-4 text-sm text-slate-500">Review and update your account-related preferences.</Text>
 
         <SettingsSection title="Account Overview">
-          <SettingsItem title="Email" description={settings?.email || 'yourname@company.com'} />
-          <SettingsItem title="Phone" description={settings?.phone || '+91 98765 43210'} />
-          <SettingsItem title="Employee ID" description={settings?.employeeId || 'EMP00001'} />
+          <ListItem title="Email" subtitle={settings?.email || 'yourname@company.com'} />
+          <ListItem title="Phone" subtitle={settings?.phone || '+91 98765 43210'} />
+          <ListItem title="Employee ID" subtitle={settings?.employeeId || 'EMP00001'} />
         </SettingsSection>
 
         <SettingsSection title="Security Actions">
-          <SettingsItem title="Change Password" description="Update your password securely." onPress={() => navigation.navigate('SecuritySettings')} />
+          <ListItem title="Change Password" subtitle="Update your password securely." onPress={() => navigation.navigate('SecuritySettings')} />
         </SettingsSection>
       </ScrollView>
     </SafeAreaView>

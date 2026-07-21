@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { LeaveStatusBadge } from './LeaveStatusBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 
 export function LeaveHistoryItem({ item, onPress }) {
   const startDate = new Date(item.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -14,7 +14,7 @@ export function LeaveHistoryItem({ item, onPress }) {
           <Text className="text-textSecondary text-sm mt-1">{startDate} - {endDate}</Text>
           <Text className="text-textSecondary text-sm mt-1">{item.reason}</Text>
         </View>
-        <LeaveStatusBadge status={item.status} />
+        <StatusBadge status={item.status} />
       </View>
       <View className="flex-row justify-between items-center mt-3">
         <Text className="text-textSecondary text-xs">{item.duration} day(s)</Text>

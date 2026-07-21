@@ -7,7 +7,7 @@ import { GreetingHeader } from '../components/GreetingHeader';
 import { SummaryCard } from '../components/SummaryCard';
 import { QuickActionCard } from '../components/QuickActionCard';
 import { AnnouncementCard } from '../components/AnnouncementCard';
-import { SectionHeader } from '../components/SectionHeader';
+import { SectionHeader } from '@/components/SectionHeader';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 import Animated, { FadeInUp, FadeInDown, Layout } from 'react-native-reanimated';

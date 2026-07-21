@@ -1,20 +1,39 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-export function AttendanceStatusBadge({ status }) {
+export function StatusBadge({ status, type = 'default' }) {
   let bgColor = 'bg-gray-100';
   let textColor = 'text-gray-600';
   
-  if (status === 'Present' || status === 'CLOCKED_IN' || status === 'CLOCKED_OUT') {
+  const statusStr = status?.toString().toUpperCase() || '';
+
+  // Determine colors based on status content
+  if (
+    statusStr.includes('PRESENT') || 
+    statusStr.includes('APPROVED') || 
+    statusStr.includes('CLOCKED_IN') ||
+    statusStr.includes('CLOCKED_OUT')
+  ) {
     bgColor = 'bg-green-100';
     textColor = 'text-success';
-  } else if (status === 'Late' || status === 'Half Day') {
+  } else if (
+    statusStr.includes('LATE') || 
+    statusStr.includes('PENDING') || 
+    statusStr.includes('HALF')
+  ) {
     bgColor = 'bg-orange-100';
     textColor = 'text-warning';
-  } else if (status === 'Absent') {
+  } else if (
+    statusStr.includes('ABSENT') || 
+    statusStr.includes('REJECTED')
+  ) {
     bgColor = 'bg-red-100';
     textColor = 'text-error';
-  } else if (status === 'On Leave' || status === 'Weekend' || status === 'Holiday') {
+  } else if (
+    statusStr.includes('LEAVE') || 
+    statusStr.includes('HOLIDAY') || 
+    statusStr.includes('WEEKEND')
+  ) {
     bgColor = 'bg-blue-100';
     textColor = 'text-primary';
   }
