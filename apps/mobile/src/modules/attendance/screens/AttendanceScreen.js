@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAttendanceStore } from '../store/attendanceStore';
 import { ClockInOutButton } from '../components/ClockInOutButton';
 import { WorkingHoursCard } from '../components/WorkingHoursCard';
-import { AttendanceStatusBadge } from '../components/AttendanceStatusBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 
@@ -45,7 +45,7 @@ export default function AttendanceScreen() {
           <Text className="text-textSecondary font-inter text-sm mb-1">{currentDate}</Text>
           <View className="flex-row justify-between items-center mb-6">
             <Text className="text-textPrimary text-3xl font-bold font-inter tracking-tight">Attendance</Text>
-            <AttendanceStatusBadge status={currentStatus} />
+            <StatusBadge status={currentStatus} />
           </View>
 
           {error ? <ErrorMessage message={error} /> : null}

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../hooks/useSettings';
 import { SettingsSection } from '../components/SettingsSection';
-import { SettingsItem } from '../components/SettingsItem';
+import { ListItem } from '@/components/ListItem';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { LoadingOverlay } from '@/components/LoadingOverlay';
 
@@ -30,23 +30,23 @@ export default function SettingsHomeScreen() {
         {error ? <ErrorMessage message={error} /> : null}
 
         <SettingsSection title="Account">
-          <SettingsItem title="Account Settings" description="Review your account details and security status." onPress={() => navigation.navigate('AccountSettings')} />
-          <SettingsItem title="Security Settings" description="Control passwords, sign-in and security options." onPress={() => navigation.navigate('SecuritySettings')} />
+          <ListItem title="Account Settings" subtitle="Review your account details and security status." onPress={() => navigation.navigate('AccountSettings')} />
+          <ListItem title="Security Settings" subtitle="Control passwords, sign-in and security options." onPress={() => navigation.navigate('SecuritySettings')} />
         </SettingsSection>
 
         <SettingsSection title="Preferences">
-          <SettingsItem title="Notification Preferences" description="Choose how you receive updates." onPress={() => navigation.navigate('NotificationPreferences')} />
-          <SettingsItem title="Privacy Settings" description="Control your visibility and privacy options." onPress={() => navigation.navigate('PrivacySettings')} />
-          <SettingsItem title="Language & Theme" description="Set your language and preferred look." onPress={() => navigation.navigate('Preferences')} />
+          <ListItem title="Notification Preferences" subtitle="Choose how you receive updates." onPress={() => navigation.navigate('NotificationPreferences')} />
+          <ListItem title="Privacy Settings" subtitle="Control your visibility and privacy options." onPress={() => navigation.navigate('PrivacySettings')} />
+          <ListItem title="Language & Theme" subtitle="Set your language and preferred look." onPress={() => navigation.navigate('Preferences')} />
         </SettingsSection>
 
         <SettingsSection title="Support">
-          <SettingsItem title="Help & Support" description="Need help? Contact the support team." onPress={() => navigation.navigate('HelpAndSupport')} />
-          <SettingsItem title="About Application" description="Version, build and app details." onPress={() => navigation.navigate('AboutApplication')} />
+          <ListItem title="Help & Support" subtitle="Need help? Contact the support team." onPress={() => navigation.navigate('HelpAndSupport')} />
+          <ListItem title="About Application" subtitle="Version, build and app details." onPress={() => navigation.navigate('AboutApplication')} />
         </SettingsSection>
 
         <SettingsSection title="Account Actions">
-          <SettingsItem title="Logout" description="Sign out of your current session." onPress={() => navigation.navigate('LogoutConfirmation')} />
+          <ListItem title="Logout" subtitle="Sign out of your current session." onPress={() => navigation.navigate('LogoutConfirmation')} destructive />
         </SettingsSection>
       </ScrollView>
     </SafeAreaView>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { AttendanceStatusBadge } from './AttendanceStatusBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 
 export function AttendanceHistoryItem({ record }) {
   const formatTime = (isoString) => {
@@ -17,7 +17,7 @@ export function AttendanceHistoryItem({ record }) {
     <View className="bg-white p-4 rounded-xl border border-border mb-3">
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-textPrimary font-bold text-base">{formatDate(record.date)}</Text>
-        <AttendanceStatusBadge status={record.status} />
+        <StatusBadge status={record.status} />
       </View>
       
       <View className="flex-row justify-between bg-surface p-2 rounded-lg border border-border">

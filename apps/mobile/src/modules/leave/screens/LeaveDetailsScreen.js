@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useLeaveStore } from '../store/leaveStore';
-import { LeaveStatusBadge } from '../components/LeaveStatusBadge';
+import { StatusBadge } from '@/components/StatusBadge';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import { Button } from '@/components/Button';
 
@@ -43,7 +43,7 @@ export default function LeaveDetailsScreen() {
           <View className="bg-white border border-border rounded-2xl p-4">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-textPrimary text-xl font-semibold">{currentRequest.leaveType}</Text>
-              <LeaveStatusBadge status={currentRequest.status} />
+              <StatusBadge status={currentRequest.status} />
             </View>
             <Text className="text-textSecondary mb-2">Dates: {currentRequest.startDate} to {currentRequest.endDate}</Text>
             <Text className="text-textSecondary mb-2">Duration: {currentRequest.duration} day(s)</Text>
