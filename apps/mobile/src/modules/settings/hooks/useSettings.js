@@ -1,0 +1,29 @@
+import { useEffect } from 'react';
+import { useSettingsStore } from '../store/settingsStore';
+
+export function useSettings() {
+  const store = useSettingsStore();
+
+  useEffect(() => {
+    if (!store.settings) {
+      store.fetchSettings();
+    }
+  }, [store]);
+
+  return {
+    settings: store.settings,
+    preferences: store.preferences,
+    notificationPreferences: store.notificationPreferences,
+    privacySettings: store.privacySettings,
+    securitySettings: store.securitySettings,
+    isLoading: store.isLoading,
+    isSubmitting: store.isSubmitting,
+    error: store.error,
+    fetchSettings: store.fetchSettings,
+    updateSettings: store.updateSettings,
+    updatePreferences: store.updatePreferences,
+    updateNotificationSettings: store.updateNotificationSettings,
+    logout: store.logout,
+    clearError: store.clearError,
+  };
+}
