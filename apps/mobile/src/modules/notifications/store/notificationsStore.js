@@ -1,55 +1,74 @@
 import { create } from 'zustand';
+import { notificationsService } from '../services/notificationsService';
 
-const initialNotifications = [
-  {
-    id: '1',
-    title: 'Leave request approved',
-    message: 'Your leave request for 15 Jul has been approved by HR.',
-    type: 'info',
-    createdAt: '2024-07-15T09:00:00.000Z',
-    read: false,
-  },
-  {
-    id: '2',
-    title: 'Company announcement',
-    message: 'The office will be closed for maintenance on 20 Jul from 10 AM.',
-    type: 'announcement',
-    createdAt: '2024-07-14T14:30:00.000Z',
-    read: true,
-  },
-  {
-    id: '3',
-    title: 'Payroll reminder',
-    message: 'Please verify your bank details before the payroll run.',
-    type: 'reminder',
-    createdAt: '2024-07-13T08:15:00.000Z',
-    read: false,
-  },
-];
+const initialState = {
+  notifications: [],
+  announcements: [],
+  unreadCount: 0,
+  isLoading: false,
+  isRefreshing: false,
+  error: null,
+};
 
 export const useNotificationsStore = create((set, get) => ({
-  notifications: initialNotifications,
-  announcements: initialNotifications.filter((item) => item.type === 'announcement'),
-  unreadCount: initialNotifications.filter((item) => !item.read).length,
+  ...initialState,
 
-  markAsRead: (id) => {
-    const nextNotifications = get().notifications.map((item) =>
-      item.id === id ? { ...item, read: true } : item,
-    );
+  fetchNotifications: async (refresh = false) => {
+    if (refresh) {
+      set({ isRefreshing: true, error: null });
+    } else {
+      set({ isLoading: true, error: null });
+    }
 
-    set({
-      notifications: nextNotifications,
-      announcements: nextNotifications.filter((item) => item.type === 'announcement'),
-      unreadCount: nextNotifications.filter((item) => !item.read).length,
-    });
+    try {
+      const data = await notificationsService.getNotifications();
+      set({
+        notifications: data || [],
+        announcements: (data || []).filter((item) => item.type === 'announcement'),
+        unreadCount: (data || []).filter((item) => !item.read).length,
+        isLoading: false,
+        isRefreshing: false,
+      });
+    } catch (err) {
+      set({
+        error: err.message || 'Failed to fetch notifications',
+        isLoading: false,
+        isRefreshing: false,
+      });
+    }
   },
 
-  markAllAsRead: () => {
-    const nextNotifications = get().notifications.map((item) => ({ ...item, read: true }));
-    set({
-      notifications: nextNotifications,
-      announcements: nextNotifications.filter((item) => item.type === 'announcement'),
-      unreadCount: 0,
-    });
+  markAsRead: async (id) => {
+    try {
+      await notificationsService.markAsRead(id);
+      const nextNotifications = get().notifications.map((item) =>
+        item.id === id ? { ...item, read: true } : item
+      );
+
+      set({
+        notifications: nextNotifications,
+        announcements: nextNotifications.filter((item) => item.type === 'announcement'),
+        unreadCount: nextNotifications.filter((item) => !item.read).length,
+      });
+    } catch (err) {
+      set({ error: err.message || 'Failed to mark notification as read' });
+    }
   },
+
+  markAllAsRead: async () => {
+    try {
+      await notificationsService.markAllAsRead();
+      const nextNotifications = get().notifications.map((item) => ({ ...item, read: true }));
+      set({
+        notifications: nextNotifications,
+        announcements: nextNotifications.filter((item) => item.type === 'announcement'),
+        unreadCount: 0,
+      });
+    } catch (err) {
+      set({ error: err.message || 'Failed to mark all notifications as read' });
+    }
+  },
+
+  clearError: () => set({ error: null }),
 }));
+
