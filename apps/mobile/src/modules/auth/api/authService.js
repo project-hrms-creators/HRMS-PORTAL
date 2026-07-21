@@ -1,39 +1,55 @@
-import axiosInstance from '@/api/axios';
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
 
-const ENDPOINTS = {
-  LOGIN: '/auth/login',
-  REFRESH_TOKEN: '/auth/refresh',
-  LOGOUT: '/auth/logout',
-  VALIDATE_SESSION: '/auth/validate',
-  PROFILE_BOOTSTRAP: '/auth/me',
-};
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const authService = {
   login: async (identifier, password) => {
-    // According to PRD, identifier can be email or phone
+    if (USE_MOCK_DATA) {
+      await delay(800);
+      return mockData.auth.loginResponse;
+    }
     const payload = { identifier, password };
-    const response = await axiosInstance.post(ENDPOINTS.LOGIN, payload);
-    return response.data;
+    const response = await apiClient.post(API_ROUTES.AUTH.LOGIN, payload);
+    return response?.data || response;
   },
 
   refreshToken: async (refreshToken) => {
-    const response = await axiosInstance.post(ENDPOINTS.REFRESH_TOKEN, { refreshToken });
-    return response.data;
+    if (USE_MOCK_DATA) {
+      await delay(200);
+      return mockData.auth.loginResponse; // Returns new tokens
+    }
+    const response = await apiClient.post(API_ROUTES.AUTH.REFRESH, { refreshToken });
+    return response?.data || response;
   },
 
   logout: async () => {
-    // Assuming backend invalidates token if needed
-    const response = await axiosInstance.post(ENDPOINTS.LOGOUT);
-    return response.data;
+    if (USE_MOCK_DATA) {
+      await delay(400);
+      return { success: true };
+    }
+    const response = await apiClient.post(API_ROUTES.AUTH.LOGOUT);
+    return response?.data || response;
   },
 
   validateSession: async () => {
-    const response = await axiosInstance.get(ENDPOINTS.VALIDATE_SESSION);
-    return response.data;
+    if (USE_MOCK_DATA) {
+      await delay(300);
+      return mockData.auth.validateResponse;
+    }
+    const response = await apiClient.get(API_ROUTES.AUTH.VALIDATE);
+    return response?.data || response;
   },
 
   getProfile: async () => {
-    const response = await axiosInstance.get(ENDPOINTS.PROFILE_BOOTSTRAP);
-    return response.data;
+    if (USE_MOCK_DATA) {
+      await delay(400);
+      return mockData.profile.main;
+    }
+    const response = await apiClient.get(API_ROUTES.AUTH.ME);
+    return response?.data || response;
   },
 };
+

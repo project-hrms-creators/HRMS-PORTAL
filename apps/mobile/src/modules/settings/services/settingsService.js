@@ -1,105 +1,81 @@
-import api from '@/api/axios';
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const mockSettings = {
-  preferences: {
-    theme: 'system',
-    language: 'en',
-  },
-  notificationPreferences: {
-    push: true,
-    email: true,
-    sms: false,
-  },
-  privacySettings: {
-    profileVisibility: 'employees',
-    showOnlineStatus: true,
-  },
-  securitySettings: {
-    twoFactorEnabled: false,
-    biometricsEnabled: false,
-  },
-};
-
 export const settingsService = {
   async getSettings() {
-    try {
-      const response = await api.get('/settings');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockSettings;
+      return mockData.settings;
     }
+    const response = await apiClient.get(API_ROUTES.SETTINGS.GET);
+    return response?.data || response;
   },
 
   async updateSettings(payload) {
-    try {
-      const response = await api.put('/settings', payload);
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
       return payload;
     }
+    const response = await apiClient.put(API_ROUTES.SETTINGS.UPDATE, payload);
+    return response?.data || response;
   },
 
   async getPreferences() {
-    try {
-      const response = await api.get('/settings/preferences');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
-      return mockSettings.preferences;
+      return mockData.settings.preferences;
     }
+    const response = await apiClient.get(API_ROUTES.SETTINGS.PREFERENCES);
+    return response?.data || response;
   },
 
   async updatePreferences(payload) {
-    try {
-      const response = await api.put('/settings/preferences', payload);
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
       return payload;
     }
+    const response = await apiClient.put(API_ROUTES.SETTINGS.PREFERENCES, payload);
+    return response?.data || response;
   },
 
   async getNotificationSettings() {
-    try {
-      const response = await api.get('/settings/notifications');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
-      return mockSettings.notificationPreferences;
+      return mockData.settings.notificationPreferences;
     }
+    const response = await apiClient.get(API_ROUTES.SETTINGS.NOTIFICATIONS);
+    return response?.data || response;
   },
 
   async updateNotificationSettings(payload) {
-    try {
-      const response = await api.put('/settings/notifications', payload);
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
       return payload;
     }
+    const response = await apiClient.put(API_ROUTES.SETTINGS.NOTIFICATIONS, payload);
+    return response?.data || response;
   },
 
   async logout() {
-    try {
-      const response = await api.post('/auth/logout');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
       return { success: true };
     }
+    const response = await apiClient.post(API_ROUTES.AUTH.LOGOUT);
+    return response?.data || response;
   },
 
   async contactSupport(payload) {
-    try {
-      const response = await api.post('/support/contact', payload);
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
       return { success: true, message: 'Support request received.' };
     }
+    const response = await apiClient.post(API_ROUTES.SETTINGS.SUPPORT, payload);
+    return response?.data || response;
   },
 };
+

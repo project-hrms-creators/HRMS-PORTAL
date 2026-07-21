@@ -1,141 +1,140 @@
-import api from '@/api/axios';
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
+import { executeOrQueue } from '@/utils/offlineUtils';
+import { SYNC_EVENTS } from '@/models/offlineModels';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const mockProfile = {
-  id: 'emp-001',
-  employeeId: 'EMP00001',
-  firstName: 'Aarav',
-  lastName: 'Patel',
-  email: 'aarav.patel@company.com',
-  phone: '+91 98765 43210',
-  avatarUrl: null,
-  department: 'Engineering',
-  designation: 'Senior Mobile Engineer',
-  managerName: 'Mina Rao',
-  joiningDate: '2023-05-15',
-  location: 'Bengaluru',
-  address: '12, MG Road, Bengaluru',
-};
-
-const mockEmployment = {
-  employeeId: 'EMP00001',
-  department: 'Engineering',
-  designation: 'Senior Mobile Engineer',
-  managerName: 'Mina Rao',
-  joiningDate: '2023-05-15',
-  employmentStatus: 'ACTIVE',
-};
-
-const mockContacts = [
-  {
-    id: 'emg-1',
-    name: 'Asha Patel',
-    relationship: 'Mother',
-    phone: '+91 99887 66554',
-  },
-];
-
-const mockDocuments = [
-  { id: 'doc-1', name: 'Offer Letter', type: 'offer', uploadedAt: '2023-05-01' },
-  { id: 'doc-2', name: 'ID Proof', type: 'id', uploadedAt: '2023-05-02' },
-];
-
-const mockAccount = {
-  email: 'aarav.patel@company.com',
-  phone: '+91 98765 43210',
-  lastPasswordChange: '2026-06-01',
-  twoFactorEnabled: false,
-};
-
 export const profileService = {
   getProfile: async () => {
-    try {
-      const response = await api.get('/profile');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(700);
-      return mockProfile;
+      return mockData.profile.main;
     }
+    const response = await apiClient.get(API_ROUTES.PROFILE.GET);
+    return response?.data || response;
   },
 
   updateProfile: async (payload) => {
-    try {
-      const response = await api.put('/profile', payload);
-      return response.data?.data || response.data;
-    } catch {
-      await delay(600);
-      return payload;
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(600);
+        return {
+          success: true,
+          data: payload,
+        };
+      }
+      return apiClient.put(API_ROUTES.PROFILE.UPDATE, payload);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.PROFILE_UPDATE,
+      API_ROUTES.PROFILE.UPDATE,
+      'PUT',
+      payload
+    );
+
+    if (response?.offline) {
+      return { ...payload, offline: true };
     }
+    return response?.data || response;
   },
 
   getEmploymentDetails: async () => {
-    try {
-      const response = await api.get('/profile/employment');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockEmployment;
+      return mockData.profile.employment;
     }
+    const response = await apiClient.get(API_ROUTES.PROFILE.EMPLOYMENT);
+    return response?.data || response;
   },
 
   getEmergencyContacts: async () => {
-    try {
-      const response = await api.get('/profile/emergency-contacts');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockContacts;
+      return mockData.profile.contacts;
     }
+    const response = await apiClient.get(API_ROUTES.PROFILE.EMERGENCY_CONTACTS);
+    return response?.data || response;
   },
 
   updateEmergencyContact: async (payload) => {
-    try {
-      const response = await api.put('/profile/emergency-contacts', payload);
-      return response.data?.data || response.data;
-    } catch {
-      await delay(500);
-      return payload;
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(500);
+        return {
+          success: true,
+          data: payload,
+        };
+      }
+      return apiClient.put(API_ROUTES.PROFILE.EMERGENCY_CONTACTS, payload);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.PROFILE_UPDATE, // Reuse profile update sync event
+      API_ROUTES.PROFILE.EMERGENCY_CONTACTS,
+      'PUT',
+      payload
+    );
+
+    if (response?.offline) {
+      return { ...payload, offline: true };
     }
+    return response?.data || response;
   },
 
   uploadProfileImage: async () => {
-    try {
-      const response = await api.post('/profile/avatar');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
       return { avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80' };
     }
+    const response = await apiClient.post(API_ROUTES.PROFILE.AVATAR);
+    return response?.data || response;
   },
 
   changePassword: async (payload) => {
-    try {
-      const response = await api.post('/profile/change-password', payload);
-      return response.data?.data || response.data;
-    } catch {
-      await delay(500);
-      return { success: true };
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(500);
+        return { success: true };
+      }
+      return apiClient.post(API_ROUTES.PROFILE.CHANGE_PASSWORD, payload);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.PROFILE_UPDATE, // Reuse profile update event or just call it online-only
+      API_ROUTES.PROFILE.CHANGE_PASSWORD,
+      'POST',
+      payload
+    );
+
+    if (response?.offline) {
+      return { success: false, message: 'Password change is queued. It will update when online.', offline: true };
     }
+    return response?.data || response;
   },
 
   getDocuments: async () => {
-    try {
-      const response = await api.get('/profile/documents');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockDocuments;
+      return mockData.profile.documents;
     }
+    const response = await apiClient.get(API_ROUTES.PROFILE.DOCUMENTS);
+    return response?.data || response;
   },
 
   getAccountInfo: async () => {
-    try {
-      const response = await api.get('/profile/account');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockAccount;
+      return mockData.profile.account;
     }
+    const response = await apiClient.get(API_ROUTES.PROFILE.ACCOUNT);
+    return response?.data || response;
   },
 };
+
