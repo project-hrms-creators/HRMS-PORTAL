@@ -9,7 +9,11 @@ import LeaveScreen from '@/modules/leave/screens/LeaveScreen';
 import ApplyLeaveScreen from '@/modules/leave/screens/ApplyLeaveScreen';
 import LeaveHistoryScreen from '@/modules/leave/screens/LeaveHistoryScreen';
 import LeaveDetailsScreen from '@/modules/leave/screens/LeaveDetailsScreen';
-import Profile from '@/modules/profile/Profile';
+import ProfileHomeScreen from '@/modules/profile/screens/ProfileHomeScreen';
+import EditProfileScreen from '@/modules/profile/screens/EditProfileScreen';
+import EmergencyContactsScreen from '@/modules/profile/screens/EmergencyContactsScreen';
+import AccountInfoScreen from '@/modules/profile/screens/AccountInfoScreen';
+import ChangePasswordScreen from '@/modules/profile/screens/ChangePasswordScreen';
 import Notifications from '@/modules/notifications/Notifications';
 import { useAuthStore } from '@/modules/auth/store/authStore';
 import { sessionManager } from '@/modules/auth/services/sessionManager';
@@ -50,7 +54,11 @@ export default function RootNavigator() {
           <Stack.Screen name="ApplyLeave" component={ApplyLeaveScreen} />
           <Stack.Screen name="LeaveHistory" component={LeaveHistoryScreen} />
           <Stack.Screen name="LeaveDetails" component={LeaveDetailsScreen} />
-          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Profile" component={ProfileHomeScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="EmergencyContacts" component={EmergencyContactsScreen} />
+          <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+          <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           <Stack.Screen name="Notifications" component={Notifications} />
         </>
       )}
