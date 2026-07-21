@@ -1,30 +1,68 @@
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
+import { executeOrQueue } from '@/utils/offlineUtils';
+import { SYNC_EVENTS } from '@/models/offlineModels';
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const notificationsService = {
-  async getNotifications() {
-    return Promise.resolve([
-      {
-        id: '1',
-        title: 'Leave request approved',
-        message: 'Your leave request for 15 Jul has been approved by HR.',
-        type: 'info',
-        createdAt: '2024-07-15T09:00:00.000Z',
-        read: false,
-      },
-      {
-        id: '2',
-        title: 'Company announcement',
-        message: 'The office will be closed for maintenance on 20 Jul from 10 AM.',
-        type: 'announcement',
-        createdAt: '2024-07-14T14:30:00.000Z',
-        read: true,
-      },
-      {
-        id: '3',
-        title: 'Payroll reminder',
-        message: 'Please verify your bank details before the payroll run.',
-        type: 'reminder',
-        createdAt: '2024-07-13T08:15:00.000Z',
-        read: false,
-      },
-    ]);
+  getNotifications: async () => {
+    if (USE_MOCK_DATA) {
+      await delay(500);
+      return mockData.notifications;
+    }
+    const response = await apiClient.get(API_ROUTES.NOTIFICATIONS.LIST);
+    return response?.data || response;
+  },
+
+  markAsRead: async (id) => {
+    const endpoint = `${API_ROUTES.NOTIFICATIONS.MARK_READ}/${id}`;
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(200);
+        return { success: true };
+      }
+      return apiClient.post(endpoint);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.NOTIFICATION_MARK_READ,
+      endpoint,
+      'POST',
+      { id }
+    );
+
+    if (response?.offline) {
+      return { success: true, offline: true };
+    }
+    return response?.data || response;
+  },
+
+  markAllAsRead: async () => {
+    const endpoint = `${API_ROUTES.NOTIFICATIONS.MARK_READ}/all`;
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(300);
+        return { success: true };
+      }
+      return apiClient.post(endpoint);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.NOTIFICATION_MARK_READ,
+      endpoint,
+      'POST',
+      {}
+    );
+
+    if (response?.offline) {
+      return { success: true, offline: true };
+    }
+    return response?.data || response;
   },
 };
+

@@ -1,56 +1,11 @@
-import api from '@/api/axios';
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
+import { executeOrQueue } from '@/utils/offlineUtils';
+import { SYNC_EVENTS } from '@/models/offlineModels';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const mockLeaveTypes = [
-  { id: 'annual', label: 'Annual Leave', description: 'Planned annual leave' },
-  { id: 'sick', label: 'Sick Leave', description: 'Medical leave' },
-  { id: 'personal', label: 'Personal Leave', description: 'Personal time' },
-  { id: 'emergency', label: 'Emergency Leave', description: 'Urgent family or personal matters' },
-];
-
-const mockBalance = {
-  total: 24,
-  used: 8,
-  remaining: 16,
-  pending: 2,
-};
-
-const mockHistory = [
-  {
-    id: 'leave-001',
-    leaveType: 'Annual Leave',
-    startDate: '2026-07-20',
-    endDate: '2026-07-22',
-    halfDay: false,
-    reason: 'Planned vacation with family.',
-    status: 'PENDING',
-    duration: 3,
-    createdAt: '2026-07-16T08:15:00.000Z',
-  },
-  {
-    id: 'leave-002',
-    leaveType: 'Sick Leave',
-    startDate: '2026-06-12',
-    endDate: '2026-06-13',
-    halfDay: true,
-    reason: 'Medical follow-up and rest.',
-    status: 'APPROVED',
-    duration: 1,
-    createdAt: '2026-06-10T09:30:00.000Z',
-  },
-  {
-    id: 'leave-003',
-    leaveType: 'Personal Leave',
-    startDate: '2026-05-05',
-    endDate: '2026-05-05',
-    halfDay: false,
-    reason: 'Personal errands.',
-    status: 'REJECTED',
-    duration: 1,
-    createdAt: '2026-05-02T14:00:00.000Z',
-  },
-];
 
 const buildDuration = (startDate, endDate, halfDay) => {
   if (!startDate || !endDate) return 0;
@@ -62,43 +17,66 @@ const buildDuration = (startDate, endDate, halfDay) => {
 
 export const leaveService = {
   getLeaveBalance: async () => {
-    try {
-      const response = await api.get('/leave/balance');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(600);
-      return mockBalance;
+      return mockData.leave.balance;
     }
+    const response = await apiClient.get(API_ROUTES.LEAVE.BALANCE);
+    return response?.data || response;
   },
 
   getLeaveHistory: async () => {
-    try {
-      const response = await api.get('/leave/history');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(800);
-      return { data: mockHistory, total: mockHistory.length };
+      return { data: mockData.leave.history, total: mockData.leave.history.length };
     }
+    const response = await apiClient.get(API_ROUTES.LEAVE.HISTORY);
+    return response?.data || response;
   },
 
   getLeaveDetails: async (requestId) => {
-    try {
-      const response = await api.get(`/leave/history/${requestId}`);
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(500);
-      return mockHistory.find((item) => item.id === requestId) || mockHistory[0];
+      return mockData.leave.history.find((item) => item.id === requestId) || mockData.leave.history[0];
     }
+    const endpoint = `${API_ROUTES.LEAVE.HISTORY}/${requestId}`;
+    const response = await apiClient.get(endpoint);
+    return response?.data || response;
   },
 
   applyLeave: async (payload) => {
-    try {
-      const response = await api.post('/leave/apply', payload);
-      return response.data?.data || response.data;
-    } catch {
-      await delay(900);
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(900);
+        return {
+          success: true,
+          data: {
+            id: `leave-${Date.now()}`,
+            leaveType: payload.leaveType,
+            startDate: payload.startDate,
+            endDate: payload.endDate,
+            halfDay: payload.halfDay || false,
+            reason: payload.reason,
+            status: 'PENDING',
+            duration: buildDuration(payload.startDate, payload.endDate, payload.halfDay),
+            createdAt: new Date().toISOString(),
+          },
+        };
+      }
+      return apiClient.post(API_ROUTES.LEAVE.APPLY, payload);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.LEAVE_REQUEST_CREATE,
+      API_ROUTES.LEAVE.APPLY,
+      'POST',
+      payload
+    );
+
+    if (response?.offline) {
       return {
-        id: `leave-${Date.now()}`,
+        id: `leave-offline-${Date.now()}`,
         leaveType: payload.leaveType,
         startDate: payload.startDate,
         endDate: payload.endDate,
@@ -107,31 +85,50 @@ export const leaveService = {
         status: 'PENDING',
         duration: buildDuration(payload.startDate, payload.endDate, payload.halfDay),
         createdAt: new Date().toISOString(),
+        offline: true,
       };
     }
+    return response?.data || response;
   },
 
   cancelLeave: async (requestId) => {
-    try {
-      const response = await api.post(`/leave/cancel/${requestId}`);
-      return response.data?.data || response.data;
-    } catch {
-      await delay(700);
-      return { id: requestId, status: 'CANCELLED' };
+    const endpoint = `${API_ROUTES.LEAVE.CANCEL}/${requestId}`;
+    const apiCall = async () => {
+      if (USE_MOCK_DATA) {
+        await delay(700);
+        return {
+          success: true,
+          data: { id: requestId, status: 'CANCELLED' },
+        };
+      }
+      return apiClient.post(endpoint);
+    };
+
+    const response = await executeOrQueue(
+      apiCall,
+      SYNC_EVENTS.LEAVE_REQUEST_CANCEL,
+      endpoint,
+      'POST',
+      {}
+    );
+
+    if (response?.offline) {
+      return { id: requestId, status: 'CANCELLED', offline: true };
     }
+    return response?.data || response;
   },
 
   getLeaveTypes: async () => {
-    try {
-      const response = await api.get('/leave/types');
-      return response.data?.data || response.data;
-    } catch {
+    if (USE_MOCK_DATA) {
       await delay(400);
-      return mockLeaveTypes;
+      return mockData.leave.types;
     }
+    const response = await apiClient.get(API_ROUTES.LEAVE.TYPES);
+    return response?.data || response;
   },
 
   getLeaveStatus: async () => {
     return ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
   },
 };
+

@@ -2,42 +2,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNotificationsStore } from '@/modules/notifications/store/notificationsStore';
-import { notificationsService } from '@/modules/notifications/services/notificationsService';
 import NotificationItem from '@/modules/notifications/components/NotificationItem';
 
 export default function NotificationsScreen({ navigation }) {
-  const { notifications, unreadCount, markAllAsRead, markAsRead } = useNotificationsStore();
+  const { notifications, unreadCount, fetchNotifications, markAllAsRead, markAsRead, isRefreshing } = useNotificationsStore();
   const [selectedType, setSelectedType] = useState('all');
-  const [items, setItems] = useState(notifications);
 
   useEffect(() => {
-    setItems(notifications);
-  }, [notifications]);
-
-  useEffect(() => {
-    let isActive = true;
-
-    const loadNotifications = async () => {
-      const data = await notificationsService.getNotifications();
-      if (isActive) {
-        setItems(data);
-      }
-    };
-
-    loadNotifications();
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const filteredItems = useMemo(() => {
     if (selectedType === 'all') {
-      return items;
+      return notifications;
     }
 
-    return items.filter((item) => item.type === selectedType);
-  }, [items, selectedType]);
+    return notifications.filter((item) => item.type === selectedType);
+  }, [notifications, selectedType]);
 
   const tabTypes = useMemo(() => ['all', 'info', 'announcement', 'reminder'], []);
 
@@ -52,6 +33,7 @@ export default function NotificationsScreen({ navigation }) {
 
   const renderItem = useCallback(({ item }) => <NotificationItem item={item} onPress={handleSelect} />, [handleSelect]);
   const renderSeparator = useCallback(() => <View className="h-3" />, []);
+
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -91,6 +73,8 @@ export default function NotificationsScreen({ navigation }) {
         maxToRenderPerBatch={6}
         windowSize={5}
         removeClippedSubviews
+        refreshing={isRefreshing}
+        onRefresh={() => fetchNotifications(true)}
       />
     </SafeAreaView>
   );

@@ -1,52 +1,36 @@
-// import axiosInstance from '@/api/axios';
+import { apiClient } from '@/api/apiClient';
+import { API_ROUTES } from '@/constants/apiRoutes';
+import { USE_MOCK_DATA } from '@/constants/env';
+import { mockData } from '@/api/mockData';
 
-// const ENDPOINTS = {
-//   SUMMARY: '/dashboard/summary',
-//   ANNOUNCEMENTS: '/dashboard/announcements',
-//   HOLIDAYS: '/dashboard/holidays',
-// };
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const dashboardService = {
   getDashboardSummary: async () => {
-    // For now, simulate network response since backend is not ready
-    // const response = await axiosInstance.get(ENDPOINTS.SUMMARY);
-    // return response.data;
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          attendance: {
-            status: 'Present',
-            checkIn: '09:00 AM',
-            checkOut: '--:--'
-          },
-          leaveBalance: {
-            annual: 12,
-            sick: 5,
-            casual: 3
-          }
-        });
-      }, 500);
-    });
+    if (USE_MOCK_DATA) {
+      await delay(500);
+      return mockData.dashboard.summary;
+    }
+    const response = await apiClient.get(API_ROUTES.DASHBOARD.SUMMARY);
+    return response?.data || response;
   },
 
   getAnnouncements: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { id: '1', title: 'Townhall Meeting', date: 'Oct 25, 2026', type: 'Event' },
-          { id: '2', title: 'Office closed on Friday', date: 'Oct 30, 2026', type: 'Holiday' }
-        ]);
-      }, 600);
-    });
+    if (USE_MOCK_DATA) {
+      await delay(600);
+      return mockData.dashboard.announcements;
+    }
+    const response = await apiClient.get(API_ROUTES.DASHBOARD.ANNOUNCEMENTS);
+    return response?.data || response;
   },
 
   getUpcomingHolidays: async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { id: '1', name: 'Diwali', date: 'Nov 12, 2026' }
-        ]);
-      }, 700);
-    });
-  }
+    if (USE_MOCK_DATA) {
+      await delay(700);
+      return mockData.dashboard.holidays;
+    }
+    const response = await apiClient.get(API_ROUTES.DASHBOARD.HOLIDAYS);
+    return response?.data || response;
+  },
 };
+
