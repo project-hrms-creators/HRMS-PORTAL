@@ -3,26 +3,61 @@ import { View, Text } from 'react-native';
 
 export function SummaryCard({ title, data, type }) {
   if (type === 'attendance') {
+    const isPresent = data?.status === 'Present';
+    
     return (
-      <View className="bg-white rounded-2xl p-4 flex-1 shadow-sm border border-border mr-2">
-        <Text className="text-textSecondary text-xs font-semibold uppercase tracking-wider mb-2 font-inter">{title}</Text>
-        <Text className="text-textPrimary text-xl font-bold font-inter mb-1">{data?.status || 'N/A'}</Text>
-        <Text className="text-textSecondary text-xs font-inter">In: {data?.checkIn || '--:--'} | Out: {data?.checkOut || '--:--'}</Text>
+      <View className="bg-white rounded-[20px] p-5 flex-1 shadow-sm border border-border mr-2">
+        <View className="flex-row items-center mb-4">
+          <View className={`w-8 h-8 rounded-full items-center justify-center mr-2 ${isPresent ? 'bg-green-100' : 'bg-orange-100'}`}>
+            <Text className={`font-bold text-lg ${isPresent ? 'text-success' : 'text-warning'}`}>
+              {isPresent ? '✓' : '!'}
+            </Text>
+          </View>
+          <Text className="text-textSecondary text-xs font-semibold uppercase tracking-wider font-inter">{title}</Text>
+        </View>
+        
+        <Text className="text-textPrimary text-2xl font-bold font-inter tracking-tight mb-2">
+          {data?.status || 'N/A'}
+        </Text>
+        
+        <View className="flex-row justify-between bg-surface p-2 rounded-lg border border-border">
+          <View className="items-center flex-1 border-r border-border">
+            <Text className="text-textSecondary text-[10px] uppercase font-bold tracking-wider mb-0.5">In</Text>
+            <Text className="text-textPrimary text-xs font-semibold">{data?.checkIn || '--:--'}</Text>
+          </View>
+          <View className="items-center flex-1">
+            <Text className="text-textSecondary text-[10px] uppercase font-bold tracking-wider mb-0.5">Out</Text>
+            <Text className="text-textPrimary text-xs font-semibold">{data?.checkOut || '--:--'}</Text>
+          </View>
+        </View>
       </View>
     );
   }
 
   if (type === 'leave') {
     return (
-      <View className="bg-white rounded-2xl p-4 flex-1 shadow-sm border border-border ml-2">
-        <Text className="text-textSecondary text-xs font-semibold uppercase tracking-wider mb-2 font-inter">{title}</Text>
-        <View className="flex-row justify-between mb-1">
-          <Text className="text-textPrimary text-sm font-inter">Annual:</Text>
-          <Text className="text-primary font-bold font-inter">{data?.annual || 0}</Text>
+      <View className="bg-white rounded-[20px] p-5 flex-1 shadow-sm border border-border ml-2 justify-between">
+        <View className="flex-row items-center mb-3">
+          <View className="w-8 h-8 rounded-full items-center justify-center mr-2 bg-blue-100">
+             <Text className="font-bold text-primary text-lg">★</Text>
+          </View>
+          <Text className="text-textSecondary text-xs font-semibold uppercase tracking-wider font-inter">{title}</Text>
         </View>
-        <View className="flex-row justify-between">
-          <Text className="text-textPrimary text-sm font-inter">Sick:</Text>
-          <Text className="text-warning font-bold font-inter">{data?.sick || 0}</Text>
+        
+        <View className="space-y-3">
+          <View className="flex-row justify-between items-center">
+            <Text className="text-textSecondary text-sm font-inter font-medium">Annual</Text>
+            <View className="bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+              <Text className="text-primary font-bold font-inter text-sm">{data?.annual || 0} left</Text>
+            </View>
+          </View>
+          
+          <View className="flex-row justify-between items-center">
+            <Text className="text-textSecondary text-sm font-inter font-medium">Sick</Text>
+            <View className="bg-orange-50 px-3 py-1 rounded-full border border-orange-100">
+              <Text className="text-warning font-bold font-inter text-sm">{data?.sick || 0} left</Text>
+            </View>
+          </View>
         </View>
       </View>
     );

@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-export function SectionHeader({ title }) {
+export function SectionHeader({ title, onAction, actionTitle }) {
   return (
-    <View className="flex-row justify-between items-center px-4 mt-6 mb-3">
-      <Text className="text-textPrimary text-lg font-bold font-inter">{title}</Text>
+    <View className="flex-row justify-between items-end px-1 mt-8 mb-4">
+      <Text className="text-textPrimary text-xl font-bold font-inter tracking-tight">{title}</Text>
+      {onAction && actionTitle && (
+        <TouchableOpacity onPress={onAction} activeOpacity={0.6} className="pb-1">
+          <Text className="text-primary text-sm font-semibold font-inter">{actionTitle}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

@@ -1,18 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TextInput as RNTextInput, Text } from 'react-native';
+import Animated, { useAnimatedStyle, withTiming, interpolateColor } from 'react-native-reanimated';
 
-export function TextInput({ label, error, styleClass = '', ...props }) {
+export function TextInput({ label, error, styleClass = '', onFocus, onBlur, ...props }) {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = (e) => {
+    setIsFocused(true);
+    onFocus && onFocus(e);
+  };
+
+  const handleBlur = (e) => {
+    setIsFocused(false);
+    onBlur && onBlur(e);
+  };
+
+  let borderColorClass = 'border-border';
+  if (error) {
+    borderColorClass = 'border-error';
+  } else if (isFocused) {
+    borderColorClass = 'border-primary';
+  }
+
+  let shadowClass = isFocused && !error ? 'shadow-sm' : '';
+
   return (
-    <View className={`mb-4 ${styleClass}`}>
-      {label ? <Text className="text-textSecondary text-sm mb-1.5 font-inter">{label}</Text> : null}
-      <View className={`h-12 border rounded-xl px-4 justify-center bg-surface ${error ? 'border-error' : 'border-border'}`}>
+    <View className={`mb-5 ${styleClass}`}>
+      {label ? (
+        <Text className="text-textSecondary text-sm mb-1.5 font-inter font-medium">{label}</Text>
+      ) : null}
+      
+      <View 
+        className={`h-12 border rounded-xl px-4 justify-center bg-white ${borderColorClass} ${shadowClass}`}
+        style={{ borderWidth: isFocused || error ? 1.5 : 1 }}
+      >
         <RNTextInput
           className="flex-1 text-textPrimary text-base font-inter"
           placeholderTextColor="#9CA3AF"
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
       </View>
-      {error ? <Text className="text-error text-xs mt-1.5 font-inter">{error}</Text> : null}
+      
+      {error ? (
+        <Text className="text-error text-xs mt-1.5 font-inter font-medium pl-1">{error}</Text>
+      ) : null}
     </View>
   );
 }
