@@ -30,6 +30,7 @@ import ApprovalHistoryScreen from '../workflow/screens/ApprovalHistoryScreen';
 import WorkflowDetailsScreen from '../workflow/screens/WorkflowDetailsScreen';
 import ApprovalDetailsScreen from '../workflow/screens/ApprovalDetailsScreen';
 import ApprovalTimelineScreen from '../workflow/screens/ApprovalTimelineScreen';
+import WorkflowConfigurationScreen from '../workflow/screens/WorkflowConfigurationScreen';
 import { PermissionGuard } from '@/core/rbac/guards/PermissionGuard';
 
 const Stack = createNativeStackNavigator();
@@ -172,6 +173,12 @@ const ProtectedApprovalTimeline = () => (
   </PermissionGuard>
 );
 
+const ProtectedWorkflowConfiguration = () => (
+  <PermissionGuard requiredPermissions="CONFIGURE_WORKFLOW">
+    <WorkflowConfigurationScreen />
+  </PermissionGuard>
+);
+
 export default function AdminNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -201,6 +208,7 @@ export default function AdminNavigator() {
       <Stack.Screen name="AdminWorkflowDetails" component={ProtectedWorkflowDetails} />
       <Stack.Screen name="AdminApprovalDetails" component={ProtectedApprovalDetails} />
       <Stack.Screen name="AdminApprovalTimeline" component={ProtectedApprovalTimeline} />
+      <Stack.Screen name="AdminWorkflowConfiguration" component={ProtectedWorkflowConfiguration} />
 
       <Stack.Screen name="AdminAttendance" component={AdminAttendance} />
       <Stack.Screen name="AdminReports" component={AdminReports} />
