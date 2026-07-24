@@ -2,9 +2,12 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DashboardScreen from '../dashboard/DashboardScreen';
 import {
-  AdminReports,
   AdminSettings,
 } from '../screens/Placeholders';
+import ReportsDashboardScreen from '../reports/screens/ReportsDashboardScreen';
+import ReportExplorerScreen from '../reports/screens/ReportExplorerScreen';
+import AnalyticsOverviewScreen from '../reports/screens/AnalyticsOverviewScreen';
+import SavedReportsScreen from '../reports/screens/SavedReportsScreen';
 import CommunicationDashboardScreen from '../communication/screens/CommunicationDashboardScreen';
 import AnnouncementDirectoryScreen from '../communication/screens/AnnouncementDirectoryScreen';
 import CommunicationTemplatesScreen from '../communication/screens/CommunicationTemplatesScreen';
@@ -424,6 +427,31 @@ const ProtectedCommunicationTemplates = () => (
   </PermissionGuard>
 );
 
+// Reports & Analytics Protected Screen Wrappers
+const ProtectedReportsDashboard = () => (
+  <PermissionGuard requiredPermissions="VIEW_REPORTS">
+    <ReportsDashboardScreen />
+  </PermissionGuard>
+);
+
+const ProtectedReportExplorer = () => (
+  <PermissionGuard requiredPermissions="VIEW_REPORTS">
+    <ReportExplorerScreen />
+  </PermissionGuard>
+);
+
+const ProtectedAnalyticsOverview = () => (
+  <PermissionGuard requiredPermissions="VIEW_ANALYTICS">
+    <AnalyticsOverviewScreen />
+  </PermissionGuard>
+);
+
+const ProtectedSavedReports = () => (
+  <PermissionGuard requiredPermissions="VIEW_REPORTS">
+    <SavedReportsScreen />
+  </PermissionGuard>
+);
+
 export default function AdminNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -462,7 +490,11 @@ export default function AdminNavigator() {
       <Stack.Screen name="AdminAttendance" component={ProtectedAttendanceDashboard} />
       <Stack.Screen name="AttendanceDirectory" component={ProtectedAttendanceDirectory} />
       <Stack.Screen name="EmployeeAttendanceSummary" component={ProtectedEmployeeAttendanceSummary} />
-      <Stack.Screen name="AdminReports" component={AdminReports} />
+      {/* Reports & Analytics Domain */}
+      <Stack.Screen name="AdminReports" component={ProtectedReportsDashboard} />
+      <Stack.Screen name="ReportExplorer" component={ProtectedReportExplorer} />
+      <Stack.Screen name="AnalyticsOverview" component={ProtectedAnalyticsOverview} />
+      <Stack.Screen name="SavedReports" component={ProtectedSavedReports} />
       {/* Communication Center Domain */}
       <Stack.Screen name="AdminAnnouncements" component={ProtectedCommunicationDashboard} />
       <Stack.Screen name="AnnouncementDirectory" component={ProtectedAnnouncementDirectory} />
