@@ -1,23 +1,23 @@
 
 # HRMS Portal
 
-> Enterprise-grade, mobile-first Human Resource Management System built with **React Native (Expo)** and **FastAPI**, designed with scalability, maintainability, and cloud-agnostic deployment in mind.
+> Enterprise-grade Human Resource Management System built with **React (Vite)** and **FastAPI**, designed with scalability, maintainability, and cloud-agnostic deployment in mind.
 
 ---
 
 ## Overview
 
-HRMS Portal streamlines core HR operations for organizations through a modern mobile application. The project follows a modular architecture, offline-first principles, and clean engineering practices to support long-term growth from MVP to enterprise scale.
+HRMS Portal streamlines core HR operations for organizations through a modern web application. The project follows a modular architecture, offline-first principles, and clean engineering practices to support long-term growth from MVP to enterprise scale.
 
 ## Core Features
 
 - Secure Authentication (JWT + Refresh Tokens)
 - Employee Management
-- Attendance Tracking
-- Leave Management
-- Role-Based Access Control (RBAC)
-- User Profiles
-- Offline Synchronization
+- Attendance Tracking (Punch In / Out, Work Hours)
+- Leave Management (Annual, Sick, Casual leave balances & requests)
+- Role-Based Access Control (RBAC: Employee, Admin, HR, Super Admin)
+- User Profiles & Employment Details
+- Offline Synchronization & Local Storage
 - Audit Logging
 - Multi-Tenant Architecture
 - Cloud-Agnostic Deployment
@@ -26,18 +26,18 @@ HRMS Portal streamlines core HR operations for organizations through a modern mo
 
 ## Tech Stack
 
-### Mobile
+### Web Frontend
 
-- React Native (Expo Development Build)
-- JavaScript
-- React Navigation
-- Zustand
-- TanStack Query
+- React 19 (Vite)
+- JavaScript / JSX
+- React Router DOM
+- Zustand (Global State)
+- TanStack Query v5 (Data Fetching & Cache)
 - React Hook Form
-- Zod
-- NativeWind
-- MMKV
-- Axios
+- Zod (Schema Validation)
+- Tailwind CSS (Design Tokens & Styling)
+- Lucide React (Icons)
+- Axios (HTTP Client & Interceptors)
 
 ### Backend
 
@@ -56,11 +56,11 @@ HRMS Portal streamlines core HR operations for organizations through a modern mo
 
 ```text
 hrms-portal/
-├── mobile/
-├── backend/
-├── database/
-├── infrastructure/
-├── docs/
+├── apps/
+│   ├── web/           # React 19 web application (Vite + Tailwind + React Router)
+│   └── backend/       # FastAPI Python backend
+├── packages/          # Shared packages & types
+├── docs/              # System documentation & PRD
 └── scripts/
 ```
 
@@ -127,12 +127,17 @@ git clone <repository-url>
 cd hrms-portal
 ```
 
-### Mobile
+### Web Frontend
 
 ```bash
-cd mobile
+# Run directly from root:
 npm install
-npx expo start
+npm run dev
+
+# Or from apps/web:
+cd apps/web
+npm install
+npm run dev
 ```
 
 ### Backend
