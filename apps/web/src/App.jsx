@@ -1,102 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { Building2, CheckCircle2, ShieldCheck, Wifi, UserCheck } from 'lucide-react';
-import { useAuthStore } from '@/core/auth/authStore';
-import { useRbacStore } from '@/core/rbac/store/rbacStore';
-import { sessionManager } from '@/core/session/sessionManager';
-import { networkMonitor } from '@/core/network/networkMonitor';
-import { useOfflineStore } from '@/shared/stores/offlineStore';
-import { ROLES } from '@/core/rbac/roles';
+import React, { useState } from 'react';
+import { 
+  Building2, 
+  Mail, 
+  Lock, 
+  Search, 
+  CheckCircle2, 
+  AlertCircle, 
+  User, 
+  Calendar,
+  Clock
+} from 'lucide-react';
+import { Button } from '@/shared/components/Button';
+import { TextInput } from '@/shared/components/TextInput';
+import { PasswordInput } from '@/shared/components/PasswordInput';
+import { Card } from '@/shared/components/Card';
+import { StatusBadge } from '@/shared/components/StatusBadge';
+import { Modal } from '@/shared/components/Modal';
+import { ErrorMessage } from '@/shared/components/ErrorMessage';
+import { Avatar } from '@/shared/components/Avatar';
+import { Divider } from '@/shared/components/Divider';
+import { ListItem } from '@/shared/components/ListItem';
+import { SectionHeader } from '@/shared/components/SectionHeader';
+import { OfflineBanner } from '@/shared/components/OfflineBanner';
+import { PendingChangesIndicator } from '@/shared/components/PendingChangesIndicator';
+import { SyncIndicator } from '@/shared/components/SyncIndicator';
+import { TopHeader } from '@/shared/components/TopHeader';
 
 export default function App() {
-  const [initSuccess, setInitSuccess] = useState(false);
-  const { user, setUser } = useAuthStore();
-  const { role, permissions, syncWithUser } = useRbacStore();
-  const isOnline = useOfflineStore((state) => state.isOnline);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [btnLoading, setBtnLoading] = useState(false);
 
-  useEffect(() => {
-    // 1. Initialize Network Monitor
-    networkMonitor.startMonitoring();
-
-    // 2. Setup Axios interceptors
-    sessionManager.setupInterceptors();
-
-    // 3. Initialize session
-    sessionManager.initialize().then(() => {
-      // Simulate demo user if not logged in
-      if (!useAuthStore.getState().user) {
-        const demoUser = {
-          id: 'demo-01',
-          employeeId: 'EMP001',
-          firstName: 'Aarav',
-          lastName: 'Patel',
-          email: 'aarav.patel@company.com',
-          role: ROLES.ADMIN,
-        };
-        setUser(demoUser);
-        syncWithUser(demoUser);
-      }
-      setInitSuccess(true);
-    });
-
-    return () => {
-      networkMonitor.stopMonitoring();
-    };
-  }, [setUser, syncWithUser]);
+  const handleSimulateClick = () => {
+    setBtnLoading(true);
+    setTimeout(() => setBtnLoading(false), 1200);
+  };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-lg bg-white rounded-lg shadow-md border border-border p-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 bg-primary text-white rounded-xl flex items-center justify-center shadow-sm">
-            <Building2 size={28} />
-          </div>
+    <div className="min-h-screen bg-surface flex flex-col font-inter">
+      <OfflineBanner />
+      <TopHeader title="WorkForce HRMS" />
+
+      <main className="flex-1 max-w-4xl w-full mx-auto p-6 space-y-6">
+        {/* Step Indicator Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-border">
           <div>
-            <h1 className="text-2xl font-bold text-textPrimary font-inter">
-              WorkForce HRMS Portal
-            </h1>
-            <p className="text-textSecondary text-xs">
-              Phase 3: Storage & Headless Logic Integration Verified
-            </p>
+            <h1 className="text-2xl font-bold text-textPrimary">UI Design System & Primitives</h1>
+            <p className="text-textSecondary text-sm">Step 4 Complete: All 17 Shared Components Ported to React Web</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <PendingChangesIndicator />
+            <SyncIndicator />
           </div>
         </div>
 
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center justify-between p-3 bg-surface rounded-md border border-border text-sm">
-            <span className="flex items-center gap-2 text-textPrimary font-medium">
-              <Wifi size={16} className={isOnline ? "text-success" : "text-error"} />
-              Network Status
-            </span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 font-semibold">
-              {isOnline ? 'Online (Web Navigator)' : 'Offline'}
-            </span>
+        {/* Status Badges */}
+        <Card>
+          <SectionHeader title="Status Badges" />
+          <div className="flex flex-wrap gap-2">
+            <StatusBadge status="PRESENT" />
+            <StatusBadge status="CLOCKED_IN" />
+            <StatusBadge status="APPROVED" />
+            <StatusBadge status="PENDING" />
+            <StatusBadge status="LATE" />
+            <StatusBadge status="ABSENT" />
+            <StatusBadge status="REJECTED" />
+            <StatusBadge status="ON_LEAVE" />
           </div>
+        </Card>
 
-          <div className="flex items-center justify-between p-3 bg-surface rounded-md border border-border text-sm">
-            <span className="flex items-center gap-2 text-textPrimary font-medium">
-              <UserCheck size={16} className="text-primary" />
-              Auth & Session State
-            </span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-primary font-semibold">
-              {user ? `${user.firstName} (${user.role})` : 'Hydrating...'}
-            </span>
+        {/* Form Controls */}
+        <Card>
+          <SectionHeader title="Form Inputs & Validation" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TextInput
+              label="Email Address"
+              placeholder="e.g. employee@company.com"
+              icon={Mail}
+              value={email}
+              onChangeText={setEmail}
+            />
+            <PasswordInput
+              label="Password"
+              placeholder="••••••••"
+              icon={Lock}
+              value={password}
+              onChangeText={setPassword}
+            />
           </div>
+          <ErrorMessage message="Invalid credentials or network connection issue sample warning." />
+        </Card>
 
-          <div className="flex items-center justify-between p-3 bg-surface rounded-md border border-border text-sm">
-            <span className="flex items-center gap-2 text-textPrimary font-medium">
-              <ShieldCheck size={16} className="text-warning" />
-              RBAC Permissions
-            </span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">
-              {permissions?.length || 0} Permissions Loaded
-            </span>
+        {/* Buttons & Actions */}
+        <Card>
+          <SectionHeader title="Buttons & Interactivity" />
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              title="Primary Action" 
+              variant="primary" 
+              loading={btnLoading}
+              onClick={handleSimulateClick} 
+            />
+            <Button 
+              title="Secondary Action" 
+              variant="secondary" 
+              onClick={() => setModalOpen(true)}
+            />
+            <Button 
+              title="Outline Button" 
+              variant="outline" 
+            />
+            <Button 
+              title="Danger Button" 
+              variant="danger" 
+            />
           </div>
-        </div>
+        </Card>
 
-        <div className="flex items-center justify-center gap-2 text-success text-sm font-semibold bg-green-50 py-2.5 px-4 rounded-md border border-green-200">
-          <CheckCircle2 size={18} />
-          <span>Step 3 Verified: Ready for UI Components (Step 4)</span>
-        </div>
-      </div>
+        {/* List Items & Avatars */}
+        <Card>
+          <SectionHeader title="List Items & Avatars" />
+          <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+            <ListItem
+              leftElement={<Avatar name="Aarav Patel" size={36} />}
+              title="Aarav Patel"
+              subtitle="Senior Software Engineer • Engineering"
+              rightElement={<StatusBadge status="PRESENT" />}
+            />
+            <ListItem
+              leftElement={<Avatar name="Diya Sharma" size={36} />}
+              title="Diya Sharma"
+              subtitle="Product Manager • Product Team"
+              rightElement={<StatusBadge status="ON_LEAVE" />}
+            />
+          </div>
+        </Card>
+
+        {/* Modal Verification */}
+        <Modal 
+          visible={modalOpen} 
+          onClose={() => setModalOpen(false)} 
+          title="Shared Modal Verification"
+        >
+          <p className="text-textSecondary text-sm mb-4">
+            This modal is built with web-standard keyboard (Escape) listeners, backdrop clicks, and clean scroll lock.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button 
+              title="Cancel" 
+              variant="secondary" 
+              onClick={() => setModalOpen(false)} 
+            />
+            <Button 
+              title="Confirm Action" 
+              variant="primary" 
+              onClick={() => setModalOpen(false)} 
+            />
+          </div>
+        </Modal>
+      </main>
     </div>
   );
 }
