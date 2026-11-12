@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Clock, 
   Calendar, 
@@ -6,43 +6,76 @@ import {
   ArrowRight, 
   TrendingUp, 
   Megaphone,
-  UserCheck
+  UserCheck,
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 import { Card } from '@/shared/components/Card';
 import { Button } from '@/shared/components/Button';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { useAuthStore } from '@/core/auth/authStore';
-import { mockData } from '@/tests/mocks/mockData';
+import { useDashboardStore } from '@/modules/employee/dashboard/store/dashboardStore';
+import { useAttendanceStore } from '@/modules/employee/attendance/store/attendanceStore';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardHome() {
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const summary = mockData.dashboard.summary;
-  const announcements = mockData.dashboard.announcements;
+  
+  const { summary, announcements, holidays, isLoading, isRefreshing, fetchDashboardData, refreshDashboardData } = useDashboardStore();
+  const { currentStatus, todayRecord, fetchTodayAttendance, performCheckIn, performCheckOut } = useAttendanceStore();
+
+  useEffect(() => {
+    fetchDashboardData();
+    fetchTodayAttendance();
+  }, [fetchDashboardData, fetchTodayAttendance]);
+
+  const isClockedIn = currentStatus === 'CLOCKED_IN';
+
+  const handlePunchToggle = async () => {
+    if (isClockedIn) {
+      await performCheckOut();
+    } else {
+      await performCheckIn();
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
+      {/* Welcome & Quick Action Banner */}
       <div className="bg-white border border-border rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-textPrimary">
-            Welcome back, {user?.firstName || 'Employee'}! 👋
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-textPrimary font-inter">
+              Welcome back, {user?.firstName || 'Colleague'}! 👋
+            </h1>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-primary font-semibold uppercase">
+              {user?.role || 'EMPLOYEE'}
+            </span>
+          </div>
           <p className="text-textSecondary text-sm mt-1">
-            Role: <span className="font-semibold text-primary">{user?.role || 'EMPLOYEE'}</span> • Here is your HRMS overview today.
+            WorkForce HRMS • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2">
           <Button 
-            title="Clock In" 
-            variant="primary" 
+            title={isRefreshing ? "Refreshing..." : "Refresh"}
+            variant="secondary"
+            icon={<RefreshCw size={14} className={isRefreshing ? "animate-spin" : ""} />}
+            onClick={() => refreshDashboardData()}
+          />
+          <Button 
+            title={isClockedIn ? "Clock Out" : "Clock In"} 
+            variant={isClockedIn ? "danger" : "primary"} 
             icon={<Clock size={16} />}
-            onClick={() => alert('Attendance check-in recorded successfully!')}
+            onClick={handlePunchToggle}
           />
           <Button 
             title="Apply Leave" 
-            variant="secondary" 
+            variant="outline" 
             icon={<Calendar size={16} />}
-            onClick={() => window.location.href = '/leave'}
+            onClick={() => navigate('/leave')}
           />
         </div>
       </div>
@@ -52,12 +85,14 @@ export default function DashboardHome() {
         <Card className="!mb-0">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">Attendance Status</span>
-            <StatusBadge status={summary.attendance.status} />
+            <StatusBadge status={currentStatus || summary?.attendance?.status || 'NOT_MARKED'} />
           </div>
           <div className="text-2xl font-bold text-textPrimary">
-            {summary.attendance.checkIn}
+            {todayRecord?.checkIn || summary?.attendance?.checkIn || '--:--'}
           </div>
-          <p className="text-xs text-textSecondary mt-1">Check-in recorded</p>
+          <p className="text-xs text-textSecondary mt-1">
+            {isClockedIn ? `Punched in • Working: ${todayRecord?.hoursWorked || 0} hrs` : 'Punch recorded'}
+          </p>
         </Card>
 
         <Card className="!mb-0">
@@ -66,9 +101,9 @@ export default function DashboardHome() {
             <Calendar size={16} className="text-primary" />
           </div>
           <div className="text-2xl font-bold text-textPrimary">
-            {summary.leaveBalance.annual} <span className="text-sm font-normal text-textSecondary">days left</span>
+            {summary?.leaveBalance?.annual ?? 12} <span className="text-sm font-normal text-textSecondary">days left</span>
           </div>
-          <p className="text-xs text-textSecondary mt-1">Total entitlement: 18</p>
+          <p className="text-xs text-textSecondary mt-1">Entitlement: 18 days/year</p>
         </Card>
 
         <Card className="!mb-0">
@@ -77,9 +112,9 @@ export default function DashboardHome() {
             <TrendingUp size={16} className="text-warning" />
           </div>
           <div className="text-2xl font-bold text-textPrimary">
-            {summary.leaveBalance.sick} <span className="text-sm font-normal text-textSecondary">days left</span>
+            {summary?.leaveBalance?.sick ?? 5} <span className="text-sm font-normal text-textSecondary">days left</span>
           </div>
-          <p className="text-xs text-textSecondary mt-1">Total entitlement: 10</p>
+          <p className="text-xs text-textSecondary mt-1">Medical buffer</p>
         </Card>
 
         <Card className="!mb-0">
@@ -88,13 +123,13 @@ export default function DashboardHome() {
             <UserCheck size={16} className="text-success" />
           </div>
           <div className="text-2xl font-bold text-textPrimary">
-            {summary.leaveBalance.casual} <span className="text-sm font-normal text-textSecondary">days left</span>
+            {summary?.leaveBalance?.casual ?? 3} <span className="text-sm font-normal text-textSecondary">days left</span>
           </div>
           <p className="text-xs text-textSecondary mt-1">Available to use</p>
         </Card>
       </div>
 
-      {/* Announcements & Recent Activities */}
+      {/* Announcements & Holidays Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="!mb-0">
           <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
@@ -104,7 +139,7 @@ export default function DashboardHome() {
             </div>
           </div>
           <div className="divide-y divide-border">
-            {announcements.map((item) => (
+            {(announcements || []).map((item) => (
               <div key={item.id} className="py-3 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-textPrimary">{item.title}</p>
@@ -126,7 +161,7 @@ export default function DashboardHome() {
             </div>
           </div>
           <div className="divide-y divide-border">
-            {mockData.dashboard.holidays.map((h) => (
+            {(holidays || []).map((h) => (
               <div key={h.id} className="py-3 flex items-center justify-between">
                 <span className="text-sm font-medium text-textPrimary">{h.name}</span>
                 <span className="text-xs font-semibold text-primary">{h.date}</span>
