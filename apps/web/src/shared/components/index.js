@@ -15,3 +15,4 @@ export * from './PendingChangesIndicator';
 export * from './SyncIndicator';
 export * from './SectionHeader';
 export * from './TopHeader';
+export * from './ErrorBoundary';

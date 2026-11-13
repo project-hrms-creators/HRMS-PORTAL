@@ -8,6 +8,7 @@ import { useAuthStore } from '@/core/auth/authStore';
 import { useRbacStore } from '@/core/rbac/store/rbacStore';
 import AppRouter from '@/app/routes/AppRouter';
 import { LoadingOverlay } from '@/shared/components/LoadingOverlay';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -45,8 +46,10 @@ export default function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppRouter />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AppRouter />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

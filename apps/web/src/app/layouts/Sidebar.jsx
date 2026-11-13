@@ -9,7 +9,6 @@ import {
   Shield, 
   Settings, 
   Users, 
-  Briefcase, 
   FileText, 
   LogOut, 
   X,

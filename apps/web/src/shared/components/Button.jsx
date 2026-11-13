@@ -41,6 +41,21 @@ export function Button({
 
   const extraClasses = [styleClass, className].filter(Boolean).join(' ');
 
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (React.isValidElement(icon)) {
+      return icon;
+    }
+    if (
+      typeof icon === 'function' ||
+      (typeof icon === 'object' && icon !== null && ('$$typeof' in icon || 'render' in icon))
+    ) {
+      const IconComponent = icon;
+      return <IconComponent size={16} />;
+    }
+    return icon;
+  };
+
   return (
     <button
       type={type}
@@ -52,7 +67,7 @@ export function Button({
       {loading ? (
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
       ) : icon ? (
-        <span className="mr-2 inline-flex items-center">{icon}</span>
+        <span className="mr-2 inline-flex items-center">{renderIcon()}</span>
       ) : null}
       <span className={textClass}>{title || children}</span>
     </button>
