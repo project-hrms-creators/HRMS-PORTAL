@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Menu, Bell, User as UserIcon, Building2 } from 'lucide-react';
+import { Menu, Bell, User as UserIcon } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { OfflineBanner } from '@/shared/components/OfflineBanner';
 import { PendingChangesIndicator } from '@/shared/components/PendingChangesIndicator';

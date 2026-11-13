@@ -121,6 +121,14 @@ export const useLeaveStore = create((set, get) => ({
     }
   },
 
+  submitLeaveRequest: async (payload) => {
+    return get().applyLeave(payload);
+  },
+
+  cancelLeaveRequest: async (requestId) => {
+    return get().cancelLeave(requestId);
+  },
+
   refreshLeaveData: async () => {
     await Promise.all([get().fetchLeaveBalance(), get().fetchLeaveHistory(true)]);
   },

@@ -14,7 +14,6 @@ export function TextInput({
   defaultValue,
   type = 'text',
   placeholder,
-  placeholderTextColor,
   ...props 
 }) {
   const [isFocused, setIsFocused] = useState(false);
@@ -43,6 +42,21 @@ export function TextInput({
 
   const wrapperClass = [styleClass, className].filter(Boolean).join(' ');
 
+  const renderIcon = () => {
+    if (!Icon) return null;
+    if (React.isValidElement(Icon)) {
+      return Icon;
+    }
+    if (
+      typeof Icon === 'function' ||
+      (typeof Icon === 'object' && Icon !== null && ('$$typeof' in Icon || 'render' in Icon))
+    ) {
+      const IconComponent = Icon;
+      return <IconComponent size={18} color={isFocused ? "#2563EB" : "#9CA3AF"} />;
+    }
+    return Icon;
+  };
+
   return (
     <div className={`mb-5 w-full ${wrapperClass}`}>
       {label && (
@@ -54,11 +68,7 @@ export function TextInput({
       <div className={`h-11 border rounded-lg px-3.5 flex items-center bg-white transition-all duration-150 ${borderColorClass}`}>
         {Icon && (
           <div className="mr-2.5 text-gray-400 flex items-center justify-center">
-            {typeof Icon === 'function' ? (
-              <Icon size={18} color={isFocused ? "#2563EB" : "#9CA3AF"} />
-            ) : (
-              Icon
-            )}
+            {renderIcon()}
           </div>
         )}
         <input
