@@ -24,8 +24,10 @@ export default function LeavePage() {
     fetchLeaveBalance, 
     fetchLeaveHistory, 
     fetchLeaveTypes, 
-    submitLeaveRequest, 
-    cancelLeaveRequest,
+    applyLeave,
+    submitLeaveRequest = applyLeave, 
+    cancelLeave,
+    cancelLeaveRequest = cancelLeave,
     clearError 
   } = useLeaveStore();
 

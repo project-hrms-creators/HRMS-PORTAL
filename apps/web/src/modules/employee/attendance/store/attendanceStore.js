@@ -98,6 +98,10 @@ export const useAttendanceStore = create((set, get) => ({
     }
   },
 
+  fetchAttendanceHistory: async (refresh = false) => {
+    return get().fetchHistory(refresh);
+  },
+
   fetchSummary: async () => {
     set({ isLoading: true, error: null });
     try {

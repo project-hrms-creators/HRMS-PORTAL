@@ -13,15 +13,18 @@ export default function AttendancePage() {
     isLoading, 
     error,
     fetchTodayAttendance, 
+    fetchHistory,
     fetchAttendanceHistory, 
     performCheckIn, 
     performCheckOut 
   } = useAttendanceStore();
 
+  const loadHistory = fetchAttendanceHistory || fetchHistory;
+
   useEffect(() => {
-    fetchTodayAttendance();
-    fetchAttendanceHistory();
-  }, [fetchTodayAttendance, fetchAttendanceHistory]);
+    if (fetchTodayAttendance) fetchTodayAttendance();
+    if (loadHistory) loadHistory();
+  }, [fetchTodayAttendance, loadHistory]);
 
   const isClockedIn = currentStatus === 'CLOCKED_IN';
 
@@ -46,7 +49,7 @@ export default function AttendancePage() {
             title="Refresh Logs"
             variant="secondary"
             icon={<RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />}
-            onClick={() => { fetchTodayAttendance(); fetchAttendanceHistory(); }}
+            onClick={() => { fetchTodayAttendance?.(); loadHistory?.(); }}
           />
           <Button 
             title={isClockedIn ? "Clock Out" : "Clock In"} 
